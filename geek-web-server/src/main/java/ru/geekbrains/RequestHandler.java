@@ -6,14 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class RequestHandler implements Runnable {
 
     private final Socket socket;
-
     private final String folder;
 
     public RequestHandler(Socket socket, String folder) {
@@ -28,30 +24,15 @@ public class RequestHandler implements Runnable {
                         socket.getInputStream(), StandardCharsets.UTF_8));
              PrintWriter output = new PrintWriter(socket.getOutputStream())
         ) {
-            while (!input.ready());
+            while (!input.ready()) ;
 
             String firstLine = input.readLine();
-            String[] parts = firstLine.split(" ");
             System.out.println(firstLine);
             while (input.ready()) {
                 System.out.println(input.readLine());
             }
 
-            Path path = Paths.get(folder, parts[1]);
-            if (!Files.exists(path)) {
-                output.println("HTTP/1.1 404 NOT_FOUND");
-                output.println("Content-Type: text/html; charset=utf-8");
-                output.println();
-                output.println("<h1>Файл не найден!</h1>");
-                output.flush();
-                return;
-            }
-
-            output.println("HTTP/1.1 200 OK");
-            output.println("Content-Type: text/html; charset=utf-8");
-            output.println();
-
-            Files.newBufferedReader(path).transferTo(output);
+            FileHandler.responseFromFile(folder, ParsingHandler.getFileNameFromRequest(firstLine), output);
 
             System.out.println("Client disconnected!");
         } catch (IOException e) {
