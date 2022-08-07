@@ -19,7 +19,11 @@ public class WebServer {
                 Socket socket = serverSocket.accept();
                 System.out.println("New client connected!");
 
-                new Thread(new RequestHandler(new SocketService(socket), new FileService(WWW))).start();
+                new Thread(new RequestHandler(
+                        new SocketService(socket),
+                        new FileService(WWW),
+                        new RequestParser(),
+                        new ResponseSerializer())).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
