@@ -13,6 +13,12 @@ public class HttpResponse {
     public HttpResponse() {
     }
 
+    public HttpResponse(int statusCode, Map<String, String> headers, String body) {
+        this.statusCode = statusCode;
+        this.headers = headers;
+        this.body = body;
+    }
+
     public int getStatusCode() {
         return statusCode;
     }
